@@ -8,8 +8,13 @@ _ROOT = Path(__file__).resolve().parent.parent.parent
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from lib.iwhalecloud import run_completion
-from lib.state import get_root
+from lib.completion import (
+    is_markdown_truncated,
+    markdown_continue_prompt,
+    run_until_complete,
+)
+from lib.slug import make_demand_slug
+from lib.state import get_root, load
 
 
 def main() -> None:
@@ -26,22 +31,31 @@ def main() -> None:
 
     analysis_text = analysis_path.read_text(encoding="utf-8")
 
-    prompt = f"""根据以下需求分析文档，生成 Spring Boot 项目的设计文档（Markdown 格式）。
+    prompt = f"""根据以下需求分析文档，生成设计文档（Markdown 格式）。
 
 需求分析：
 {analysis_text}
 
-请输出完整的设计文档，包含：
-1. 架构设计（分层、模块划分）
-2. 接口定义（REST API、请求/响应格式）
-3. 数据模型（实体、表结构）
-4. 技术选型说明
+请根据需求类型输出设计文档：
+- 若为**新建完整项目**：包含架构设计、接口定义、数据模型、技术选型
+- 若为**在已有项目上添加功能**：重点描述要新增的模块、接口、数据变更、与现有代码的集成方式，说明目标项目技术栈（若需求中未提及则合理推断）
 
 只输出 Markdown 内容，不要其他说明。"""
 
-    content = run_completion(messages=[{"role": "user", "content": prompt}])
+    content = run_until_complete(
+        initial_prompt=prompt,
+        is_truncated=is_markdown_truncated,
+        continue_prompt_fn=markdown_continue_prompt,
+        max_continue=3,
+    )
 
-    out_dir = root / "output" / "design-docs" / args.task_id
+    state = load()
+    demand = ""
+    if state.get("task_id") == args.task_id:
+        demand = state.get("initial_demand", {}).get("demand_text", "")
+    slug = make_demand_slug(demand)
+    dir_name = f"{args.task_id}_{slug}"
+    out_dir = root / "output" / "design-docs" / dir_name
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / "design.md"
     out_path.write_text(content, encoding="utf-8")

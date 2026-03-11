@@ -18,7 +18,12 @@ def main() -> None:
     args = parser.parse_args()
 
     root = get_root()
-    code_dir = root / "output" / "code" / args.task_id
+    code_base = root / "output" / "code"
+    code_dir = code_base / args.task_id
+    if not code_dir.exists():
+        matches = [d for d in code_base.iterdir() if d.is_dir() and d.name.startswith(args.task_id)]
+        if matches:
+            code_dir = matches[0]
     if not code_dir.exists():
         print(f"Error: {code_dir} not found", file=sys.stderr)
         sys.exit(1)

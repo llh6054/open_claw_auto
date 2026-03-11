@@ -1,6 +1,6 @@
 ---
 name: req-analysis
-description: "需求分析：根据用户需求生成结构化需求分析文档，支持迭代修改"
+description: "需求分析：根据用户需求生成结构化需求分析文档，支持新建项目或添加功能，支持迭代修改"
 author: chubby
 version: 1.0
 invoke: on-demand

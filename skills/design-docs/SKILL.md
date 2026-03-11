@@ -1,6 +1,6 @@
 ---
 name: design-docs
-description: "设计文档：根据需求分析生成架构、接口、数据模型设计"
+description: "设计文档：根据需求分析生成设计，支持新建项目或在已有项目上添加功能的设计"
 author: chubby
 version: 1.0
 invoke: on-demand
