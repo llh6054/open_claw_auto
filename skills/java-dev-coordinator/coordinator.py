@@ -84,6 +84,13 @@ def cmd_restart() -> int:
     return 0
 
 
+def cmd_clear() -> int:
+    """完全清空流程，下次需用 new 新建任务。"""
+    save({})
+    print("已清空，可重新开始。说「自动化」或「需求开发」+ 需求描述即可新建任务。")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -93,6 +100,7 @@ def main() -> int:
     p_new.add_argument("--demand", required=True, help="需求描述")
 
     sub.add_parser("restart")
+    sub.add_parser("clear")
 
     args = parser.parse_args()
     if args.cmd == "status":
@@ -101,6 +109,8 @@ def main() -> int:
         return cmd_new(args.demand)
     if args.cmd == "restart":
         return cmd_restart()
+    if args.cmd == "clear":
+        return cmd_clear()
     return 1
 
 

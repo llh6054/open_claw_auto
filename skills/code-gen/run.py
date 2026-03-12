@@ -83,6 +83,8 @@ def main() -> None:
         is_truncated=is_code_truncated,
         continue_prompt_fn=code_continue_prompt,
         max_continue=4,
+        model="claude-4.5-sonnet",
+        backend="claude_cli",
     )
 
     if not has_existing:

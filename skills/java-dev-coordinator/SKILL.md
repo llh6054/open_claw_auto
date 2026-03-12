@@ -1,6 +1,6 @@
 ---
 name: java-dev-coordinator
-description: "主控：阶段管理、状态读写、每阶段完成后必须等待用户确认再继续、断点恢复"
+description: "主控：需求分析→设计→代码生成→提交。触发词：自动化、需求开发、代码生成、重新开始、清空、重置、查看状态。Use when user says 自动化, 需求开发, 代码生成, 重新开始, 清空, 重置, 查看状态, or wants to automate/restart/check project flow."
 author: chubby
 version: 1.0
 invoke: on-demand
@@ -11,6 +11,12 @@ metadata:
 ---
 
 # Java 开发主控技能
+
+**触发词**：用户输入以下任一关键词时启用本技能。
+- 启动流程：**自动化**、**需求开发**、**代码生成**
+- 重新开始：**重新开始**、**清空**、**聊叉了**、**从头来** → exec `coordinator.py clear`
+- 重置阶段：**重置**、**重做需求分析** → exec `coordinator.py restart`
+- 查看进度：**查看状态**、**当前进度**、**到哪一步了** → exec `coordinator.py status`
 
 管理多阶段需求分析 → 设计文档 → 代码生成 → 代码提交的流程。
 
@@ -37,8 +43,11 @@ cd /path/to/auto-code-project && python3 skills/java-dev-coordinator/coordinator
 # 新建任务
 cd /path/to/auto-code-project && python3 skills/java-dev-coordinator/coordinator.py new --demand "你的需求描述"
 
-# 重置
+# 重置到需求分析（保留当前需求）
 cd /path/to/auto-code-project && python3 skills/java-dev-coordinator/coordinator.py restart
+
+# 完全清空（聊叉了、重新开始时用）
+cd /path/to/auto-code-project && python3 skills/java-dev-coordinator/coordinator.py clear
 ```
 
 ## 各阶段 exec 调用

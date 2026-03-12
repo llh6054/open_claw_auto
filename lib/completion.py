@@ -4,8 +4,6 @@
 """
 from typing import Callable
 
-from lib.iwhalecloud import run_completion
-
 
 def run_until_complete(
     initial_prompt: str,
@@ -13,25 +11,42 @@ def run_until_complete(
     continue_prompt_fn: Callable[[str], str],
     max_tokens: int = 8192,
     max_continue: int = 4,
+    model: str | None = None,
+    backend: str = "iwhalecloud",
 ) -> str:
     """
     调用 LLM 直到输出完整（不截断）。
     - initial_prompt: 首次 prompt
     - is_truncated: 检测内容是否被截断
     - continue_prompt_fn: 根据末尾内容生成续写 prompt
+    - model: 可选，指定模型（如 claude-4.5-sonnet）
+    - backend: "iwhalecloud" | "claude_cli"，代码生成默认用 claude_cli
     """
-    content = run_completion(
-        messages=[{"role": "user", "content": initial_prompt}],
-        max_tokens=max_tokens,
-    )
+    if backend == "claude_cli":
+        from lib.claude_cli import run_completion as cli_run
+
+        def do_run(prompt: str) -> str:
+            return cli_run(prompt)
+
+    else:
+        from lib.iwhalecloud import run_completion as whale_run
+
+        kwargs = {"max_tokens": max_tokens}
+        if model:
+            kwargs["model"] = model
+
+        def do_run(prompt: str) -> str:
+            return whale_run(
+                messages=[{"role": "user", "content": prompt}],
+                **kwargs,
+            )
+
+    content = do_run(initial_prompt)
     for _ in range(max_continue):
         if not is_truncated(content):
             break
         tail = content[-1500:] if len(content) > 1500 else content
-        extra = run_completion(
-            messages=[{"role": "user", "content": continue_prompt_fn(tail)}],
-            max_tokens=max_tokens,
-        )
+        extra = do_run(continue_prompt_fn(tail))
         if not extra or len(extra.strip()) < 30:
             break
         content = content.rstrip() + "\n\n" + extra.strip()

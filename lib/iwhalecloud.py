@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 BASE_URL = "https://lab.iwhalecloud.com/gpt-proxy/anthropic"
-MODEL = "claude-4.5-haiku"
+MODEL = "claude-4.5-sonnet"
 PROXY_VARS = [
     "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY",
     "http_proxy", "https_proxy", "all_proxy",

@@ -32,20 +32,23 @@ def main() -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"analysis-v{args.version}.md"
 
-    prompt = f"""根据以下需求描述，生成结构化的需求分析文档（Markdown 格式）。
+    analyst_prompt_path = Path(__file__).resolve().parent / "analyst_prompt.txt"
+    analyst_prompt = analyst_prompt_path.read_text(encoding="utf-8") if analyst_prompt_path.exists() else ""
 
-需求描述：
+    prompt = ""
+    if analyst_prompt:
+        prompt += analyst_prompt.strip() + "\n\n---\n\n"
+
+    prompt += f"""请根据以下原始需求描述，严格按照上述角色定位、工作原则和输出章节要求，生成《新销售平台业务需求方案文档》。
+
+原始需求描述：
 {args.demand}
 """
     if args.feedback:
         prompt += f"\n用户反馈（请根据反馈修改）：\n{args.feedback}\n"
 
     prompt += """
-请输出完整的需求分析文档。根据需求类型选择结构：
-- **新建项目**：项目概述、核心需求、功能详解、非功能需求、技术栈建议、交互设计
-- **在已有项目上添加功能**：目标项目说明、要添加的功能、与现有模块的集成方式、接口/数据变更
-
-只输出 Markdown 内容，不要其他说明。"""
+请输出完整的需求方案文档，只输出 Markdown 内容，不要其他说明。"""
 
     content = run_until_complete(
         initial_prompt=prompt,
