@@ -108,8 +108,7 @@ def main() -> None:
         is_truncated=is_code_truncated,
         continue_prompt_fn=code_continue_prompt,
         max_continue=3,
-        model="claude-4.5-sonnet",
-        backend="claude_cli",
+        model_default="claude_cli",
     )
 
     n = _parse_and_write(content, code_dir)

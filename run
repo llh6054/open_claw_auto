@@ -1,0 +1,9 @@
+#!/bin/bash
+# 统一使用 litellm venv 运行 Python 脚本
+# 可通过 AUTO_CODE_PYTHON 覆盖默认路径
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+PYTHON="${AUTO_CODE_PYTHON:-/home/chubby/litellm-project-venv/bin/python}"
+if [ ! -x "$PYTHON" ]; then
+    PYTHON="python3"
+fi
+exec "$PYTHON" "$@"

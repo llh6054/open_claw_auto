@@ -36,45 +36,47 @@ metadata:
 
 ## 命令
 
+**统一使用项目根目录的 `./run` 脚本**（调用 litellm venv 的 Python）：
+
 ```bash
 # 查看状态
-cd /path/to/auto-code-project && python3 skills/java-dev-coordinator/coordinator.py status
+cd /path/to/auto-code-project && ./run skills/java-dev-coordinator/coordinator.py status
 
 # 新建任务
-cd /path/to/auto-code-project && python3 skills/java-dev-coordinator/coordinator.py new --demand "你的需求描述"
+cd /path/to/auto-code-project && ./run skills/java-dev-coordinator/coordinator.py new --demand "你的需求描述"
 
 # 重置到需求分析（保留当前需求）
-cd /path/to/auto-code-project && python3 skills/java-dev-coordinator/coordinator.py restart
+cd /path/to/auto-code-project && ./run skills/java-dev-coordinator/coordinator.py restart
 
 # 完全清空（聊叉了、重新开始时用）
-cd /path/to/auto-code-project && python3 skills/java-dev-coordinator/coordinator.py clear
+cd /path/to/auto-code-project && ./run skills/java-dev-coordinator/coordinator.py clear
 ```
 
 ## 各阶段 exec 调用
 
 ### req-analysis
 ```bash
-cd /path/to/auto-code-project && python3 skills/req-analysis/run.py --task-id <task_id> --version 1 --demand "<需求>"
+cd /path/to/auto-code-project && ./run skills/req-analysis/run.py --task-id <task_id> --version 1 --demand "<需求>"
 ```
 
 ### design-docs
 ```bash
-cd /path/to/auto-code-project && python3 skills/design-docs/run.py --task-id <task_id> --analysis-path <req-analysis 输出的路径>
+cd /path/to/auto-code-project && ./run skills/design-docs/run.py --task-id <task_id> --analysis-path <req-analysis 输出的路径>
 ```
 （analysis-path 使用 req-analysis 打印的路径，形如 output/req-analysis/<task_id>_<提示词>/analysis-v1.md）
 
 ### code-gen
 ```bash
 # 新建项目
-python3 skills/code-gen/run.py --task-id <task_id> --design-path <design-docs 输出的路径>
+cd /path/to/auto-code-project && ./run skills/code-gen/run.py --task-id <task_id> --design-path <design-docs 输出的路径>
 
 # 在已有项目上添加功能
-python3 skills/code-gen/run.py --task-id <task_id> --design-path <design_path> --target-dir <已有项目路径>
+cd /path/to/auto-code-project && ./run skills/code-gen/run.py --task-id <task_id> --design-path <design_path> --target-dir <已有项目路径>
 ```
 
 ### code-submit
 ```bash
-cd /path/to/auto-code-project && python3 skills/code-submit/run.py --task-id <task_id>
+cd /path/to/auto-code-project && ./run skills/code-submit/run.py --task-id <task_id>
 ```
 
 ## 状态文件

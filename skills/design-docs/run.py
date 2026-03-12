@@ -31,14 +31,21 @@ def main() -> None:
 
     analysis_text = analysis_path.read_text(encoding="utf-8")
 
-    prompt = f"""根据以下需求分析文档，生成设计文档（Markdown 格式）。
+    newsales_path = root / "NEWSALES_CONTEXT.md"
+    newsales_ctx = newsales_path.read_text(encoding="utf-8") if newsales_path.exists() else ""
+
+    prompt = ""
+    if newsales_ctx:
+        prompt += "## 现有项目上下文（设计必须基于此）\n\n" + newsales_ctx.strip() + "\n\n---\n\n"
+
+    prompt += f"""根据以下需求分析文档，**结合上述 newsales 项目上下文**，生成设计文档（Markdown 格式）。
 
 需求分析：
 {analysis_text}
 
 请根据需求类型输出设计文档：
 - 若为**新建完整项目**：包含架构设计、接口定义、数据模型、技术选型
-- 若为**在已有项目上添加功能**：重点描述要新增的模块、接口、数据变更、与现有代码的集成方式，说明目标项目技术栈（若需求中未提及则合理推断）
+- 若为**在已有项目上添加功能**：**必须基于 bms_Polaris、tms-React_Polaris**，重点描述要新增的模块、接口、数据变更、与现有代码的集成方式，遵循现有技术栈（Spring Boot、React、DDD 分层等）
 
 只输出 Markdown 内容，不要其他说明。"""
 

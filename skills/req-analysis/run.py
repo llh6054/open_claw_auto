@@ -35,11 +35,16 @@ def main() -> None:
     analyst_prompt_path = Path(__file__).resolve().parent / "analyst_prompt.txt"
     analyst_prompt = analyst_prompt_path.read_text(encoding="utf-8") if analyst_prompt_path.exists() else ""
 
+    newsales_path = root / "NEWSALES_CONTEXT.md"
+    newsales_ctx = newsales_path.read_text(encoding="utf-8") if newsales_path.exists() else ""
+
     prompt = ""
     if analyst_prompt:
         prompt += analyst_prompt.strip() + "\n\n---\n\n"
+    if newsales_ctx:
+        prompt += "## 现有项目上下文（必须基于此进行分析）\n\n" + newsales_ctx.strip() + "\n\n---\n\n"
 
-    prompt += f"""请根据以下原始需求描述，严格按照上述角色定位、工作原则和输出章节要求，生成《新销售平台业务需求方案文档》。
+    prompt += f"""请根据以下原始需求描述，**结合上述 newsales 现有项目上下文**，严格按照角色定位、工作原则和输出章节要求，生成《新销售平台业务需求方案文档》。需求分析必须说明与 bms_Polaris、tms-React_Polaris 的关联及涉及的中心/模块。
 
 原始需求描述：
 {args.demand}
@@ -54,7 +59,8 @@ def main() -> None:
         initial_prompt=prompt,
         is_truncated=is_markdown_truncated,
         continue_prompt_fn=markdown_continue_prompt,
-        max_continue=3,
+        max_tokens=16384,
+        max_continue=6,
     )
     out_path.write_text(content, encoding="utf-8")
     print(str(out_path.relative_to(root)))
