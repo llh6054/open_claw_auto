@@ -38,3 +38,6 @@ cd /path/to/workspace && python3 auto-code-project/skills/req-analysis/run.py --
 - `--version`: 版本号（1, 2, 3...）
 - `--demand`: 需求描述文本
 - `--feedback`: 可选，用户反馈用于迭代
+- `--stage`: 可选，阶段类型，默认 `preliminary`
+  - `preliminary`: 仅输出 3.1 功能说明 + 3.2 功能点 + 中心/模块分工计划
+  - `full`: 输出完整 1～10 章需求文档
